@@ -288,7 +288,7 @@ const App = () => {
 >
   {/* LEFT SECTION — JSON INPUT */}
   <div className="flex flex-col items-center w-full md:w-1/2 relative">
-    <div className="text-3xl font-medium mt-6 md:mt-10 text-center md:text-left">
+    <div className="text-3xl font-medium mt-6 md:mt-10 text-center md:text-left lg:relative lg:right-40 lg:bottom-8">
       JSON Tree Visualizer
     </div>
 
