@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import '@xyflow/react/dist/style.css';
-import {  ReactFlow } from '@xyflow/react';
+import { ReactFlow} from '@xyflow/react';
+
 
 
 
@@ -150,6 +151,7 @@ function buildTreeFromJson(parsedData) {
 
 const App = () => {
 
+  const [theme, setTheme] = useState("light"); 
 
    const [jsonInput, setJsonInput] = useState("")
 
@@ -157,9 +159,14 @@ const App = () => {
 
    const [error, setError] = useState("");
 
-   //using reactflow
-  const [nodes, setNodes] = useState([]);
-  const [edges, setEdges] = useState([]);
+   const [nodes, setNodes] = useState([]);
+   const [edges, setEdges] = useState([]);
+
+   const [searchQuery, setSearchQuery] = useState("");
+   const [searchResult, setSearchResult] = useState("");
+   const [rfInstance, setRfInstance] = useState(null);
+
+
 
   const handleInputChange = (e) =>{
         setJsonInput(e.target.value)
@@ -182,9 +189,6 @@ const App = () => {
        const { nodes, edges } = buildTreeFromJson(parsed);
         setNodes(nodes);
         setEdges(edges);
-
-        console.log("Nodes:", nodes);
-        console.log("Edges:", edges);
       
     } catch (e) {
       console.error("JSON Parse Error:", e);
@@ -195,56 +199,199 @@ const App = () => {
     }
    }
 
-  
+     const handleSearchChange = (e) => {
+       setSearchQuery(e.target.value);
+     };
 
-  
+     const handleSearchSubmit = (e) => {
+  e.preventDefault();
+
+  if (!searchQuery.trim()) {
+    setSearchResult("Please enter a key or path to search.");
+    return;
+  }
+
+  let matchFound = false;
+  let firstMatch = null;
+
+  const getFullPath = (nodeId, nodesMap, parentPath = "") => {
+    const node = nodesMap[nodeId];
+    if (!node) return parentPath;
+    const parentEdge = edges.find((e) => e.target === nodeId);
+    if (!parentEdge)
+      return parentPath ? `${parentPath}.${node.data.label}` : node.data.label;
+    const parentId = parentEdge.source;
+    const parentPathNew = getFullPath(parentId, nodesMap, parentPath);
+    return parentPathNew
+      ? `${parentPathNew}.${node.data.label}`
+      : node.data.label;
+  };
+
+  const nodesMap = Object.fromEntries(nodes.map((n) => [n.id, n]));
+
+  const updatedNodes = nodes.map((node) => {
+    const fullPath = getFullPath(node.id, nodesMap, "").toLowerCase();
+    const isMatch = fullPath.includes(searchQuery.toLowerCase());
+
+    if (isMatch) {
+      matchFound = true;
+      if (!firstMatch) firstMatch = node; 
+    }
+
+    const originalBg = node.style.background.startsWith("#fde68a")
+      ? "#2dd4bf"
+      : node.style.background;
+
+    return {
+      ...node,
+      style: {
+        ...node.style,
+        background: isMatch ? "#fde68a" : originalBg,
+        border: isMatch ? "2px solid #facc15" : "none",
+      },
+    };
+  });
+
+  setNodes(updatedNodes);
+  setSearchResult(matchFound ? "" : "❌ No match found");
+
+  if (matchFound && firstMatch) {
+    const zoomLevel = 1.8; 
+        setTimeout(() => {
+  if (!rfInstance || !firstMatch) return;
+
+  const zoomLevel = 1.8;
+  const duration = 800; 
+
+  rfInstance.setCenter(
+    firstMatch.position.x,
+    firstMatch.position.y,
+    {
+      zoom: zoomLevel,
+      duration,
+      easing: (t) => 1 - Math.pow(1 - t, 3), 
+    }
+  );
+}, 150);
+
+  }
+};
+
+ 
   return (
-    <div className='flex gap-10 h-screen bg-gray-50'>
-       <div>
-         <div className='text-3xl font-medium ml-10 mt-10'>JSON Tree Visualizer</div>
-          <form onSubmit={handleSubmit} action="" className='flex flex-col'>
-         
-         <div className='ml-20 mt-2'>
-              {error && <p className="text-red-500 mt-4">{error}</p>}
-         </div>
-          
-                <textarea className="w-[500px] h-[500px] p-3 border border-gray-400 rounded-md resize-none ml-20 mt-2"
-                 placeholder="Paste your JSON here..."
-                 value={jsonInput} onChange={handleInputChange}
-                 onPaste={handleInputPaste}></textarea>
-          
-               <button className="mt-4 bg-blue-600 hover:bg-blue-700     text-white font-semibold py-2 px-6 rounded-md transition duration-300 w-50 ml-20 cursor-pointer">
-                 Generate Tree
-               </button>
-          </form>
-        </div>
-       
-       <div>
-           <form className="flex items-center gap-3 mt-6 ml-20">
-            <input
-              type="text"
-              placeholder="Search by JSON path (e.g. $.user.name)"
-              className="w-[400px] px-4 py-2 border border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-
-            <button
-              type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md transition duration-300"
-            >
-              Search
-            </button>
-          </form>
-
-           <div className="w-[750px] h-[500px]  border mt-10 border-gray-400 rounded-md flex items-center justify-center">
-            <ReactFlow
-             nodes={nodes}
-             edges={edges}
-             fitView
-             style={{ background: '#f9fafb' }}
-            />
-           </div>
-      </div>
+      <div
+  className={`${
+    theme === "dark"
+      ? "dark bg-gray-900 text-gray-100"
+      : "bg-gray-50 text-gray-900"
+  } flex flex-col md:flex-row gap-10 min-h-screen transition-colors duration-500 p-4`}
+>
+  {/* LEFT SECTION — JSON INPUT */}
+  <div className="flex flex-col items-center w-full md:w-1/2 relative">
+    <div className="text-3xl font-medium mt-6 md:mt-10 text-center md:text-left">
+      JSON Tree Visualizer
     </div>
-         
+
+    {/* 🌙 Theme Toggle — Mobile Version (Icon Only) */}
+    <div className="mt-2 md:hidden">
+      <button
+        onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+        className="p-2 rounded-full bg-gray-800 text-white hover:bg-gray-700 cursor-pointer 
+                   dark:bg-gray-100 dark:text-black dark:hover:bg-gray-200 transition duration-300"
+      >
+        {theme === "light" ? "🌙" : "☀️"}
+      </button>
+    </div>
+
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col items-center md:items-start w-full"
+    >
+      {error && <p className="text-red-500 mt-2 md:ml-10">{error}</p>}
+
+      <textarea
+        className={`w-full sm:w-[90%] md:w-[500px] h-[300px] sm:h-[400px] md:h-[500px] p-3 border rounded-md resize-none mt-4 md:ml-10
+          transition-colors duration-300
+          ${
+            theme === "dark"
+              ? "bg-gray-800 text-gray-100 border-gray-600"
+              : "bg-white text-gray-900 border-gray-400"
+          }`}
+        placeholder="Paste your JSON here..."
+        value={jsonInput}
+        onChange={handleInputChange}
+        onPaste={handleInputPaste}
+      ></textarea>
+
+      <button
+        className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md
+                   transition duration-300 w-full sm:w-40 md:ml-10 cursor-pointer"
+      >
+        Generate Tree
+      </button>
+    </form>
+  </div>
+
+  <div className="flex flex-col items-center w-full md:w-1/2">
+    <div className="hidden md:block self-end mb-4">
+      <button
+        onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+        className="px-4 py-2 rounded-md font-medium transition duration-300
+                   bg-gray-800 text-white hover:bg-gray-700 cursor-pointer
+                   dark:bg-gray-100 dark:text-black dark:hover:bg-gray-200"
+      >
+        {theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode"}
+      </button>
+    </div>
+
+    <form
+      onSubmit={handleSearchSubmit}
+      className="flex flex-col sm:flex-row items-center gap-3 mt-4 w-full justify-center lg:relative lg:right-25 lg:bottom-12"
+    >
+      <input
+        type="text"
+        placeholder="Search by JSON path (e.g. $.user.name)"
+        value={searchQuery}
+        onChange={handleSearchChange}
+        className={`w-full sm:w-[400px] px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500
+          transition-colors duration-300
+          ${
+            theme === "dark"
+              ? "bg-gray-800 text-gray-100 border-gray-600 placeholder-gray-400"
+              : "bg-white text-gray-900 border-gray-400 placeholder-gray-500"
+          }`}
+      />
+
+      <button
+        type="submit"
+        className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md transition duration-300 cursor-pointer"
+      >
+        Search
+      </button>
+    </form>
+
+    {searchResult && (
+      <p className="text-red-500 text-sm text-center mt-2">{searchResult}</p>
+    )}
+
+    <div
+      className="w-full sm:w-[90%] md:w-[750px] h-[300px] sm:h-[400px] md:h-[500px] border mt-6 md:mt-10 rounded-md flex items-center justify-center dark:border-gray-700 transition-all duration-300
+      lg:relative lg:right-10 lg:bottom-10"
+    >
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onInit={(instance) => setRfInstance(instance)}
+        style={{
+          background: theme === "dark" ? "#0f172a" : "#f9fafb",
+          transition: "background 0.5s ease",
+        }}
+      />
+    </div>
+  </div>
+</div>
+
+        
    
   )
 }
