@@ -7,6 +7,7 @@ The JSON Tree Visualizer is a web application that allows users to easily visual
 ## <a name="tech-stack">⚙️ Tech Stack</a>
 
  ⚛️ React.js | 🎨 Tailwind CSS | 🔄 ReactFlow
+ 
  <img src="https://img.shields.io/badge/-React-58C4DC?style=for-the-badge&logo=React&logoColor=white" />
  <img src="https://img.shields.io/badge/-Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" />
 
