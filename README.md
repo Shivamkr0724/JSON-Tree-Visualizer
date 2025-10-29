@@ -1,16 +1,57 @@
-# React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+  <h3 align="center">JSON Tree Visualizer</h3>
 
-Currently, two official plugins are available:
+## <a name="introduction">✨ Introduction</a>
+The JSON Tree Visualizer is a web application that allows users to easily visualize, explore, and search through complex JSON data in an interactive tree format. It’s designed to help developers and data analysts understand large JSON structures more intuitively.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## <a name="tech-stack">⚙️ Tech Stack</a>
 
-## React Compiler
+ ⚛️ React.js | 🎨 Tailwind CSS | 🔄 ReactFlow
+ <img src="https://img.shields.io/badge/-React-58C4DC?style=for-the-badge&logo=React&logoColor=white" />
+ <img src="https://img.shields.io/badge/-Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" />
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## <a name="features">🔋 Features</a>
+
+✨ Features
+Paste any JSON data and instantly see it as an interactive tree 🌲
+Smooth zoom and pan functionality using ReactFlow
+🔍 Smart search to highlight specific nodes
+🌗 Toggle between Light and Dark mode
+Fully responsive and built for both desktop and mobile
+
+## <a name="quick-start">🤸 Quick Start</a>
+
+Follow these steps to set up the project locally on your machine.
+
+**Prerequisites**
+
+Make sure you have the following installed on your machine:
+
+- [Git](https://git-scm.com/)
+- [Node.js](https://nodejs.org/en)
+- [npm](https://www.npmjs.com/) (Node Package Manager)
+
+**Cloning the Repository**
+
+```bash
+git clone https://github.com/Shivamkr0724/JSON-Tree-Visualizer.git
+cd JSON-Tree-Visualizer
+```
+
+**Installation**
+
+Install the project dependencies using npm:
+
+```bash
+npm install
+```
+
+**Running the Project**
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser to view the project.
