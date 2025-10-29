@@ -204,28 +204,28 @@ const App = () => {
      };
 
      const handleSearchSubmit = (e) => {
-  e.preventDefault();
+        e.preventDefault();
 
-  if (!searchQuery.trim()) {
-    setSearchResult("Please enter a key or path to search.");
-    return;
-  }
+         if (!searchQuery.trim()) {
+          setSearchResult("Please enter a key or path to search.");
+          return;
+         }
 
-  let matchFound = false;
-  let firstMatch = null;
+     let matchFound = false;
+     let firstMatch = null;
 
-  const getFullPath = (nodeId, nodesMap, parentPath = "") => {
-    const node = nodesMap[nodeId];
-    if (!node) return parentPath;
-    const parentEdge = edges.find((e) => e.target === nodeId);
-    if (!parentEdge)
+     const getFullPath = (nodeId, nodesMap, parentPath = "") => {
+     const node = nodesMap[nodeId];
+     if (!node) return parentPath;
+     const parentEdge = edges.find((e) => e.target === nodeId);
+     if (!parentEdge)
       return parentPath ? `${parentPath}.${node.data.label}` : node.data.label;
-    const parentId = parentEdge.source;
-    const parentPathNew = getFullPath(parentId, nodesMap, parentPath);
-    return parentPathNew
+     const parentId = parentEdge.source;
+     const parentPathNew = getFullPath(parentId, nodesMap, parentPath);
+     return parentPathNew
       ? `${parentPathNew}.${node.data.label}`
       : node.data.label;
-  };
+    };
 
   const nodesMap = Object.fromEntries(nodes.map((n) => [n.id, n]));
 
@@ -252,30 +252,30 @@ const App = () => {
     };
   });
 
-  setNodes(updatedNodes);
-  setSearchResult(matchFound ? "" : "❌ No match found");
+    setNodes(updatedNodes);
+    setSearchResult(matchFound ? "" : "❌ No match found");
 
-  if (matchFound && firstMatch) {
-    const zoomLevel = 1.8; 
+    if (matchFound && firstMatch) {
+     const zoomLevel = 1.8; 
         setTimeout(() => {
-  if (!rfInstance || !firstMatch) return;
+         if (!rfInstance || !firstMatch) return;
 
-  const zoomLevel = 1.8;
-  const duration = 800; 
+         const zoomLevel = 1.8;
+         const duration = 800; 
 
-  rfInstance.setCenter(
-    firstMatch.position.x,
-    firstMatch.position.y,
-    {
-      zoom: zoomLevel,
-      duration,
-      easing: (t) => 1 - Math.pow(1 - t, 3), 
-    }
-  );
-}, 150);
+        rfInstance.setCenter(
+        firstMatch.position.x,
+        firstMatch.position.y,
+         {
+           zoom: zoomLevel,
+           duration,
+           easing: (t) => 1 - Math.pow(1 - t, 3), 
+         }
+       );
+    }, 150);
 
-  }
-};
+   }
+  };
 
  
   return (
@@ -292,7 +292,6 @@ const App = () => {
       JSON Tree Visualizer
     </div>
 
-    {/* 🌙 Theme Toggle — Mobile Version (Icon Only) */}
     <div className="mt-2 md:hidden">
       <button
         onClick={() => setTheme(theme === "light" ? "dark" : "light")}
@@ -332,22 +331,21 @@ const App = () => {
     </form>
   </div>
 
+   {/* RIGHT SECTION — JSON TREE VIEW */}
   <div className="flex flex-col items-center w-full md:w-1/2">
     <div className="hidden md:block self-end mb-4">
       <button
         onClick={() => setTheme(theme === "light" ? "dark" : "light")}
         className="px-4 py-2 rounded-md font-medium transition duration-300
                    bg-gray-800 text-white hover:bg-gray-700 cursor-pointer
-                   dark:bg-gray-100 dark:text-black dark:hover:bg-gray-200"
-      >
+                   dark:bg-gray-100 dark:text-black dark:hover:bg-gray-200">
         {theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode"}
       </button>
     </div>
 
     <form
       onSubmit={handleSearchSubmit}
-      className="flex flex-col sm:flex-row items-center gap-3 mt-4 w-full justify-center lg:relative lg:right-25 lg:bottom-12"
-    >
+      className="flex flex-col sm:flex-row items-center gap-3 mt-4 w-full justify-center lg:relative lg:right-25 lg:bottom-12">
       <input
         type="text"
         placeholder="Search by JSON path (e.g. $.user.name)"
@@ -364,8 +362,7 @@ const App = () => {
 
       <button
         type="submit"
-        className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md transition duration-300 cursor-pointer"
-      >
+        className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md transition duration-300 cursor-pointer">
         Search
       </button>
     </form>
@@ -374,20 +371,20 @@ const App = () => {
       <p className="text-red-500 text-sm text-center mt-2">{searchResult}</p>
     )}
 
-    <div
-      className="w-full sm:w-[90%] md:w-[750px] h-[300px] sm:h-[400px] md:h-[500px] border mt-6 md:mt-10 rounded-md flex items-center justify-center dark:border-gray-700 transition-all duration-300
-      lg:relative lg:right-10 lg:bottom-10"
-    >
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onInit={(instance) => setRfInstance(instance)}
-        style={{
-          background: theme === "dark" ? "#0f172a" : "#f9fafb",
-          transition: "background 0.5s ease",
-        }}
-      />
-    </div>
+      <div
+        className="w-full sm:w-[90%] md:w-[750px] h-[300px] sm:h-[400px] md:h-[500px] border mt-6 md:mt-10 rounded-md flex items-center justify-center dark:border-gray-700 transition-all duration-300
+        lg:relative lg:right-10 lg:bottom-10" >
+         
+         <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onInit={(instance) => setRfInstance(instance)}
+          style={{
+           background: theme === "dark" ? "#0f172a" : "#f9fafb",
+           transition: "background 0.5s ease",
+          }}
+         />
+      </div>
   </div>
 </div>
 
